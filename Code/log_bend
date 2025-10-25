@@ -1,0 +1,14 @@
+
+ Solver begins on bend case
+
+ Read application variables from file
+   rgas =  -3.65307187E-26 cp =   0.00000000     cv =   0.00000000    
+   CFL =   4.59135442E-41 sfac =  -0.00000000    
+   Convergence  d_max =   0.00000000    
+   Mesh size  ni =       32746 nj = -1791691424
+   Inlet  pstag =   0.00000000     tstag =   0.00000000     alpha =   -6.37580793E-28
+   Outlet  p_out =  -3.65091483E-26
+
+ Read domain curves from file
+   Curve lengths ni_a =         363 ni_b =            0
+
