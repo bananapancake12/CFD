@@ -57,69 +57,69 @@
 !    Check that the areas and projected lengths are correct
       call check_mesh(g)
 
-! !     Calculate the initial guess of the flowfield in the domain. There are two
-! !     options that can be chosen with the input argument "guesstype":
-! !         1. Uniform flow properties when "guesstype = 1", this is completed
-! !            for you already, it will allow you to get the solver started but
-! !            convergence will take more iterations.
-! !         2. A 1D varying flowfield when "guesstype = 2", assuming isentropic
-! !            flow in the i-direction allows a calculation of a better
-! !            approximation to the converged flowfield and so the time to
-! !            solution will be reduced. You will need to complete this option.
-!       call flow_guess(av,g,bcs,2)
+!     Calculate the initial guess of the flowfield in the domain. There are two
+!     options that can be chosen with the input argument "guesstype":
+!         1. Uniform flow properties when "guesstype = 1", this is completed
+!            for you already, it will allow you to get the solver started but
+!            convergence will take more iterations.
+!         2. A 1D varying flowfield when "guesstype = 2", assuming isentropic
+!            flow in the i-direction allows a calculation of a better
+!            approximation to the converged flowfield and so the time to
+!            solution will be reduced. You will need to complete this option.
+      call flow_guess(av,g,bcs,2)
 
-! !     Optional output call to inspect the initial guess of the flowfield
-!       call write_output(av,g,2)
+!     Optional output call to inspect the initial guess of the flowfield
+      call write_output(av,g,2)
 
-! !     Set the length of the timestep, initially this is a constant based on a 
-! !     conservative guess of the mach number
-!       call set_timestep(av,g,bcs)
+!     Set the length of the timestep, initially this is a constant based on a 
+!     conservative guess of the mach number
+      call set_timestep(av,g,bcs)
 
-! !     Open file to store the convergence history. This is human readable during
-! !     a long run by using "tail -f conv_example.csv" in a terminal window
-!       open(unit=3,file='conv_' // av%casename // '.csv')
+!     Open file to store the convergence history. This is human readable during
+!     a long run by using "tail -f conv_example.csv" in a terminal window
+      open(unit=3,file='conv_' // av%casename // '.csv')
 
-! !     Initialise the "stopit" file, during long runs you can request an output
-! !     is written by setting the value to 1, or to terminate the calculation if
-! !     set to 2
-!       open(unit=11,file='stopit')
-!       write(11,*) 0; close(11);
+!     Initialise the "stopit" file, during long runs you can request an output
+!     is written by setting the value to 1, or to terminate the calculation if
+!     set to 2
+      open(unit=11,file='stopit')
+      write(11,*) 0; close(11);
 
-! !     Start the time stepping do loop for "nsteps". This is now the heart of the
-! !     program, you should aim to program anything inside this loop to operate as
-! !     efficiently as you can.
-!       do nstep = 1, av%nsteps
+!     Start the time stepping do loop for "nsteps". This is now the heart of the
+!     program, you should aim to program anything inside this loop to operate as
+!     efficiently as you can.
+      do nstep = 1, av%nsteps
 
-! !         Update record of nstep to use in subroutines
-!           av%nstep = nstep
+!         Update record of nstep to use in subroutines
+          av%nstep = nstep
 
-! !         Calculate secondary flow variables used in conservation equations
-!           call set_secondary(av,g)
+!         Calculate secondary flow variables used in conservation equations
+          call set_secondary(av,g)
 
-! !         Apply inlet and outlet values at the boundaries of the domain
-!           call apply_bconds(av,g,bcs)
+!         Apply inlet and outlet values at the boundaries of the domain
+          call apply_bconds(av,g,bcs)
 
-! !         Perform the timestep to update the primary flow variables
-!           call euler_iteration(av,g)
+!         Perform the timestep to update the primary flow variables
+          call euler_iteration(av,g)
 
-! !         Write out summary every "nconv" steps and update "davg" and "dmax" 
-!           if(mod(av%nstep,nconv) == 0) then
-!               call check_conv(av,g,d_avg,d_max)
-!           end if
+!         Write out summary every "nconv" steps and update "davg" and "dmax" 
+          if(mod(av%nstep,nconv) == 0) then
+              call check_conv(av,g,d_avg,d_max)
+          end if
 
-! !         Check the solution hasn't diverged or a stop has been requested 
-! !         every "ncheck" steps
-!           if(mod(av%nstep,ncheck) == 0) then
-!               call check_stop(av,g)
-!           end if
+!         Check the solution hasn't diverged or a stop has been requested 
+!         every "ncheck" steps
+          if(mod(av%nstep,ncheck) == 0) then
+              call check_stop(av,g)
+          end if
 
-! !         Stop marching if converged to the desired tolerance "conlim"
-!           if(d_max < av%d_max .and. d_avg < av%d_avg) then
-!               write(6,*) 'Calculation converged in', nstep,'iterations'
-!               exit
-!           end if
+!         Stop marching if converged to the desired tolerance "conlim"
+          if(d_max < av%d_max .and. d_avg < av%d_avg) then
+              write(6,*) 'Calculation converged in', nstep,'iterations'
+              exit
+          end if
 
-!       end do
+      end do
 
 !     Calculation finished, call "write_output" to write the final, not 
 !     necessarily converged flowfield

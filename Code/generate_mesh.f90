@@ -44,7 +44,7 @@
 
       call linspace(0.0, 1.0, sj)
 
-      ni = size(si)
+      
 
       do i = 1, ni
             do j = 2, nj-1

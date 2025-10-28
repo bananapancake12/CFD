@@ -74,20 +74,22 @@
 !     INSERT
 
       do j = 1, nj-1
-            do i = 1, ni-1
+            do i = 1, ni
                   g%lx_i(i,j) = g%y(i,j+1) - g%y(i,j)
-                  g%ly_i(i,j) = g%x(i,j) - g%y(i,j+1)
+                  g%ly_i(i,j) = g%x(i,j) - g%x(i,j+1)
+                  
             end do
       end do      
       
+      ! write(6,*) "lx_i vlas", g%lx_i
 
 !     Now repeat the calculation for the project lengths on the "j=const"
 !     facets. 
 !     INSERT
       do i = 1, ni-1
-            do j = 1, nj-1
+            do j = 1, nj
                   g%lx_j(i,j) = g%y(i+1,j) - g%y(i,j)
-                  g%ly_j(i,j) = g%x(i+1,j) - g%y(i,j)
+                  g%ly_j(i,j) = g%x(i+1,j) - g%x(i,j)
             end do
       end do      
 

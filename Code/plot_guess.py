@@ -40,7 +40,8 @@ def main():
         plot_wall(ax[n],g)
 
     # Show all the plots
-    plt.show()
+    # plt.show()
+    plt.savefig("plot_guess.png", dpi=300, bbox_inches='tight')
 
     
 main()
