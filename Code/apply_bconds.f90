@@ -14,6 +14,9 @@
 
 !     Declare the other variables you need here
 !     INSERT
+      real(8) :: t_stat
+      real(8), allocatable :: t_stat_inlet(:), p(:,:)
+      real(8), allocatable :: vx_in(:), vy_in(:), v(:)
 
 !     At the inlet boundary the change in density is driven towards "rostag",
 !     which is then used to obtain the other flow properties to match the
@@ -38,9 +41,33 @@
 !     "hstag(1,:)"
 !     INSERT
 
+   
+      ! write(6,*) "t_stat in =", t_stat(1,:)
+
+      allocate(t_stat_inlet(g%nj))
+      allocate(p(g%ni,g%nj))
+      allocate(v(g%nj))   
+      ! allocate(vx_in(g%nj))
+      ! allocate(vy_in(g%nj))
+
+      t_stat_inlet = bcs%tstag * (bcs%ro/bcs%rostag)**(av%gam-1)
+      p(1,:) = g%ro(1,:) * av%rgas * t_stat_inlet(:)
+
+      v(:) = sqrt(2* av%cp * (bcs%tstag - t_stat_inlet(:)))
+      g%vx(1,:) = v(:) * cos(bcs%alpha)
+      g%vy(1,:) = v(:) * sin(bcs%alpha)
+      g%rovx(1,:) = g%vx(1,:) * g%ro(1,:)
+      g%rovy(1,:) = g%vy(1,:) * g%ro(1,:)
+      g%hstag(1,:) = (0.5* v**2) + (av%cp * t_stat_inlet(:))
+
+      !write(6,*) "vx_in =", vx_in
+      !write(6,*) "vy_in =", vy_in
+
 !     For the outlet boundary condition set the value of "p(ni,:)" to the
 !     specified value of static pressure "p_out" in "bcs"
 !     INSERT
+
+      p(g%ni,:) = bcs%p_out
 
       end subroutine apply_bconds
 
