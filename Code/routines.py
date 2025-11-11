@@ -22,6 +22,59 @@ def calc_secondary(av,b):
     # mesh coordinates and primary flow variables.
     # INSERT
 
+    #variables
+    rovx = b['rovx']
+    rovy = b['rovy']
+    density = b['ro']
+    # hstag = b['hstag']
+    energy = b['roe']
+
+    gamma = av['gam']
+    rgas = av['rgas']
+    cp = av['cp']
+    cv = av['cv']
+    
+
+    # velocities
+    vx = rovx / density
+    vy = rovy / density
+    v = np.sqrt( vx**2 + vy**2)
+
+    #mach no
+    # t_static = (hstag - (0.5 * v**2))/ cp
+    t_static = (energy / density - 0.5 * v **2)/cv
+    a = np.sqrt(gamma * rgas * t_static)
+    mach_no = v/a
+    t_stag = t_static * (1 + (gamma-1)/2 * mach_no**2)
+    p_static =  density * rgas * t_static
+    p_stag = p_static * (t_stag / t_static) ** (gamma/(gamma-1))
+
+    flow_angle = np.arctan2(vy,vx) #rads
+
+    t_ref = av.get('t_ref', 300)   #  look up key 't_ref', default to 300
+    p_ref = av.get('p_ref', 101325)
+
+
+    entropy =  cp* np.log(t_static/t_ref) - rgas*np.log(p_static/p_ref)
+    enthalpy = cp * t_static
+
+
+    b['vx'] = vx
+    b['vy'] = vy
+    b['v'] = v
+    b['t_static'] = t_static
+    b['a'] = a
+    b['mach'] = mach_no
+    b['t_stag'] = t_stag
+    b['p_static'] = p_static
+    b['p_stag'] = p_stag
+    b['flow_angle'] = flow_angle
+    b['entropy'] = entropy
+    b['enthalpy'] = enthalpy
+
+
+
+
     return b
 
 ################################################################################

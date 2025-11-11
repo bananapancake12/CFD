@@ -79,7 +79,7 @@ def gen_tunnel(casename):
     av = default_settings(casename)
     av['pstag'] = 200e3; av['p'] = 190e3;
     av['ni'] = 401; av['nj'] = 81; 
-    av['sfac'] = 0.15; av['nsteps'] = 12000;
+    av['sfac'] = 0.30; av['nsteps'] = 12000;
 
     # Initialise the dictionary to store the curves
     geom = {}

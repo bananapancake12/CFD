@@ -35,13 +35,17 @@
 
       ! g%p = bcs%pstag - (0.5 * g%ro * g%v **2)
 
-      
+
       t_stat=(g%roe/g%ro - (0.5 * v**2) ) / av%cv
       g%p =g%ro * av%rgas * t_stat
       g%hstag = (av%cp * t_stat) + (0.5 * v**2)
+
+      !write(6,*) "t_stat", t_stat !these values are off... could this b the isssue..?
+
+      !write(6,*) "vx", g%vx
       
       !write(6,*) "p=", g%p(5,5) ! why is it printing 5 things.. ?!?!?
-      !write(6,*) "hstag=", hstag
+      !write(6,*) "hstag=", g%hstag
 
 
       end subroutine set_secondary

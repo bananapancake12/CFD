@@ -30,11 +30,23 @@
 !     Use the finite volume method to find the change in the variables "prop"
 !     over the timestep "dt", save it in the array "dcell"
 !     INSERT
+      ! allocate(flux_i(ni,nj-1), flux_j(ni-1,nj))
+
+      ! flux_i(1:ni,:) = (prop(2:ni,:) - prop(1:ni-1,:)) *li
+      ! flux_j(:,1:nj) = (prop(:,2:nj) - prop(:,1:nj-1)) * lj
+
+      dcell = (av%dt/area(1:ni-1,1:nj-1)) * (-flux_i(2:ni,:) + flux_i(1:ni-1,:) - flux_j(:,2:nj)+ flux_j(:,1:nj-1))
+
+      ! write(6,*) "dcell", dcell
 
 !     Now distribute the changes equally to the four corners of each cell. Each 
 !     interior grid point receives one quarter of the change from each of the 
 !     four cells adjacent to it.
 !     INSERT
+
+      dnode(2:ni-1, 2:nj-1) = (dcell(1:ni-2,1:nj-2) + dcell(2:ni-1,1:nj-2) + dcell(2:ni-1,2:nj-1) + dcell(1:ni-2,2:nj-1)) / 4
+      
+
 
 !     Bounding edge nodes do not have four adjacent cells and so must be treated
 !     differently, they only recieve half the change from each of the two
@@ -42,14 +54,30 @@
 !     as the "j = 1 & nj" edges. 
 !     INSERT
 
+      dnode(1, 2:nj-1) = (dcell(1,1:nj-2) + dcell(1,2:nj-1)) / 2
+      dnode(ni,2:nj-1) = (dcell(ni-1,1:nj-2) + dcell(ni-1,2:nj-1)) / 2
+
+      dnode(2:ni-1,1) = (dcell(1:ni-2,1) + dcell(2:ni-1,1) ) /2 
+      dnode(2:ni-1,nj) = (dcell(1:ni-2,nj-1) + dcell(2:ni-1,nj-1) ) /2 
+
+
 !     Finally distribute the changes to be to the four bounding corner points, 
 !     these receive the full change from the single cell of which they form one 
 !     corner.
 !     INSERT
+      
+      dnode(1,1) = dcell(1,1)
+      dnode(1,nj) = dcell(1,nj-1)
+      dnode(ni,nj) = dcell(ni-1,nj-1)
+      dnode(ni,1) = dcell(ni-1,1)
 
 !     Update the solution by adding the changes at the nodes "dnode" to the flow
 !     property "prop"
 !     INSERT
+      ! prop(1:ni,1:nj) = prop(1:ni,1:nj)+  dnode(1:ni,1:nj) 
+      ! these are the same as im doing the whole domain
+      prop = prop + dnode
+
 
       end subroutine sum_fluxes
 

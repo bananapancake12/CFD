@@ -66,8 +66,6 @@
 !       write(6,*) 'Interpolated mesh from the bounding geometry curves'
 !       write(6,*)
 
-!       write(*,*) "✅ Mesh generated successfully"
-
       
 !       write(*,'(A, I5, A, I5)') "   Mesh size: ni = ", ni, ", nj = ", nj
 

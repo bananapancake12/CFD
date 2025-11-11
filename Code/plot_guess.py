@@ -13,6 +13,7 @@ def main():
 
     # Construct full filenames to read the guess data
     filename = 'out_guess_' + sys.argv[-1] + '.bin'
+   # filename = 'out_final_' + sys.argv[-1] + '.bin'
 
     # Read the case from file
     g = read_case(filename)
@@ -41,7 +42,7 @@ def main():
 
     # Show all the plots
     # plt.show()
-    plt.savefig("plot_guess.png", dpi=300, bbox_inches='tight')
+    plt.savefig("plot_guess"+ sys.argv[-1] + '.png', dpi=300, bbox_inches='tight')
 
     
 main()

@@ -15,7 +15,7 @@
 !     Calculate the stagnation speed of sound from the inlet stagnation
 !     temperature and gas constants
 !     INSERT
-      astag = (av%gam * av%rgas * bcs%tstag)
+      astag = sqrt(av%gam * av%rgas * bcs%tstag)
 
 
 !     Assume that the maximum flow speed is also equal to "astag". This will 

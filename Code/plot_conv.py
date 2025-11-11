@@ -41,7 +41,8 @@ def main():
     ax.legend(colnames)
 
     # Show all the plots
-    plt.show()
+    plt.tight_layout()
+    plt.savefig('plot_conv_' + sys.argv[-1] + '.png', dpi=300)
 
     
 main()

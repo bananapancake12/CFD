@@ -33,8 +33,14 @@ def main():
     # coefficient
     # INSERT
 
+    inlet_cut =  cut_i(g,0)
+    p_ref, _ = area_av(inlet_cut,'p_static')
+    p_stag_ref, _ = area_av(inlet_cut, 'p_stag')
+
+    g['staticp'] = (g['p_static'] - p_ref) / (p_stag_ref - p_ref)
+
     # Specify the parameters to plot
-    fieldnames = ['cp', 'mach']; 
+    fieldnames = ['staticp', 'mach']; 
     colnames = ['Static pressure coefficient','Mach number']
 
     # Plot the calculated non-dimensional parameters to show the flow solution
@@ -61,7 +67,9 @@ def main():
         plot_wall(ax,g)
 
     # Show all the plots
-    plt.show()
+        plt.savefig(f"plot_{name}" + sys.argv[-1] + ".png", dpi=200)
+        plt.close(fig)
+    # plt.show()
 
     
 main()

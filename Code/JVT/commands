@@ -1,0 +1,18 @@
+Count lines not including comments or blank space
+Python
+find ./ -maxdepth 1 -name '*.f90' | xargs cat | sed '/^\s*#/d;/^\s*$/d' | wc -l
+Fortran
+find ./ -maxdepth 1 -name '*.f90' | xargs cat | sed '/^\s*!/d;/^\s*$/d' | wc -l
+
+Use installed developer toolkit for latest gfortran
+scl enable devtoolset-11 bash
+
+Copy all code to the public teaching area
+scp * jvt24@gate.eng.cam.ac.uk:/public/teach/4A2/Euler/Code/.
+
+OR
+
+Download zip file from empty branch
+Copy into ~/Documents/Teaching/4A2/Code
+Push to git@gitlab.developers.cam.ac.uk:eng/diva/teaching/4a2.git
+

@@ -22,7 +22,20 @@
 !     the facets in both the i and j-directions. Store these values in
 !     "mass_i" and "mass_j"
 !     INSERT
-     
+      
+
+      ! no ive done mass flow thorugh the cell not the facet...
+      ! mass_i(1:ni-1,1:nj-1) = (g%rovx(i+1,1:nj-1) * lx_i(i+1,1:nj-1) +  g%rovy(i+1,1:nj-1) * ly_i(i+1,1:nj-1)) & 
+      !                         & - ((g%rovx(i,1:nj-1) * lx_i(i,1:nj-1))+ g%rovy(i,1:nj-1)* ly_i(i,1:nj-1))
+
+      mass_i = 0.5 * ( g%rovx(:,2:nj) + g%rovx(:,1:nj-1))* g%lx_i + 0.5 * ( g%rovy(:,2:nj) + g%rovy(:,1:nj-1)) * g%ly_i
+      mass_j = 0.5 * ( g%rovx(2:ni,:) + g%rovx(1:ni-1,:)) * g%lx_j + 0.5 * ( g%rovy(2:ni,:) + g%rovy(1:ni-1,:)) *g%ly_j
+      
+      !write(6,*) "mass_i =", mass_i
+                         
+      
+      
+
 !     Apply the wall boundary condition by checking that two nodes at the
 !     end of a facet are both on a wall, if so then the appropriate mass
 !     flow array is set to have zero flow through that facet
@@ -31,26 +44,41 @@
 
 !     Update the density with mass fluxes by calling "sum_fluxes"
 !     INSERT
+      
+      call sum_fluxes(av,mass_i, mass_j, g%area,g%ro,g%dro)
+      
 
 !     Setup the conservation of energy equation by calculated the enthalpy flux
 !     and storing the values in "flux_i" and "flux_j", you will need "mass_i"
 !     and "mass_j" from before
 !     INSERT
 
+      flux_i = mass_i * 0.5 * (g%hstag(:,1:nj-1) + g%hstag(:,2:nj))
+      flux_j = mass_j * 0.5 * (g%hstag(1:ni-1,:) + g%hstag(2:ni,:))
+
+      !write(6,*) "flux_i", flux_i
+
 !     Update the internal energy with enthalpy fluxes
 !     INSERT
+      call sum_fluxes(av, flux_i, flux_j, g%area, g%roe, g%droe)
 
 !     Setup the x-momentum equation including momentum flux and pressure forces
 !     INSERT
+      flux_i = mass_i * 0.5 * (g%vx(:,2:nj) + g%vx(:,1:nj-1) ) + (0.5 * (g%p(:,1:nj-1) + g%p(:,2:nj)) * g%lx_i)
+      flux_j = mass_j * 0.5 * (g%vx(1:ni-1,:) + g%vx(2:ni,:) ) + (0.5 * (g%p(1:ni-1,:) + g%p(2:ni,:)) * g%lx_j)
 
 !     Update the x-momentum with momentum flux
 !     INSERT
+      call sum_fluxes(av, flux_i, flux_j, g%area, g%rovx, g%drovx)
 
 !     Setup the y-momentum equation including momentum flux and pressure forces
 !     INSERT
+      flux_i = mass_i * 0.5 * (g%vy(:,2:nj) + g%vy(:,1:nj-1) ) + (0.5 * (g%p(:,1:nj-1) + g%p(:,2:nj)) * g%ly_i)
+      flux_j = mass_j * 0.5 * (g%vy(1:ni-1,:) + g%vy(2:ni,:) ) + (0.5 * (g%p(1:ni-1,:) + g%p(2:ni,:)) * g%ly_j)
 
 !     Update the y-momentum with momentum flux
 !     INSERT
+      call sum_fluxes(av, flux_i, flux_j, g%area, g%rovy, g%drovy)
 
 !     Add artificial viscosity by smoothing all of the primary flow variables
       call smooth_array(av,g%ro)

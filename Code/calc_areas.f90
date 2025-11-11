@@ -88,10 +88,14 @@
 !     INSERT
       do i = 1, ni-1
             do j = 1, nj
-                  g%lx_j(i,j) = g%y(i+1,j) - g%y(i,j)
+                  g%lx_j(i,j) = - g%y(i+1,j) + g%y(i,j)
                   g%ly_j(i,j) = g%x(i+1,j) - g%x(i,j)
             end do
       end do      
+
+      ! write(6,*) g%lx_j
+
+
 
 
 !     Find the minimum length scale in the mesh, this is defined as the length

@@ -20,7 +20,8 @@
 !     Variables required for the improved guess, you will need to add to these
       real :: l_i(g%ni)
 !     INSERT
-      real, allocatable :: ylen(:), v_guess(:), t_guess(:), p_guess(:), ro_guess(:) ! guesses per i-line
+      ! real, allocatable :: ylen(:), v_guess(:), t_guess(:), p_guess(:), ro_guess(:) ! guesses per i-line
+      real, dimension(g%ni) :: ro_guess, v_guess, t_guess, p_guess, ylen
       real, allocatable :: lx_new(:,:), ly_new(:,:), l_new(:,:)
       real :: len_end, massflow, mach_lim, t_lim
       
@@ -161,22 +162,6 @@
 !         INSERT
             l_i = sum(hypot(g%lx_i, g%ly_i), dim=2)
 
-            ! allocate(ylen(nj-1))      
-      
-            ! do i = 1,ni-1
-            !       ylen = 0.0d0 !set to zero before calculating lengths
-
-            !       do j = 1, nj-1
-                        
-            !             ylen(j) = hypot(g%x(i,j+1) - g%x(i,j), g%y(i,j+1) - g%y(i,j))
-                        
-            !       end do
-
-            !       l_i(i) =  sum(ylen)
-            !       ! write(6,*) "Length of i =", i, "=", l_i(i)
-            ! end do
-
-
             !len_end = hypot(g%x(i,nj) - g%x(i,1), g%y(i,nj) - g%y(i,1)) ! check they match
             ! write(6,*) "Start Length", len_end
 
@@ -189,9 +174,10 @@
 
             massflow = l_i(ni) * ro_out * v_out
 
-            ! write(6,*) "li", l_i
-            ! write(6,*) "vout", v_out
-            ! write(6,*) "length out", l_i(ni)
+            write(6,*) "massflow", massflow !how can my mass flow be different when everything else is the same..?!?!?
+            write(6,*) "vout", v_out
+            write(6,*) "ro_out", ro_out
+            write(6,*) "length out", l_i(ni)
 
 !         Set a limit to the maximum allowable mach number in the initial
 !         guess, call this "mach_lim", calculate the corresponding temperature,
@@ -199,7 +185,8 @@
 !         INSERT
             mach_lim = 1.0
             ! t_lim = tstag / (1+ ((av%gam-1)/2)* mach_lim^2)^-1
-            t_lim = bcs%tstag / ( 1.0d0 + 0.5d0*(av%gam - 1.0d0)*mach_lim**2.0 )
+            t_lim = bcs%tstag / ( 1 + 0.5 *(av%gam - 1)*mach_lim**2)
+            !write(6,*) "t_lim", t_lim
             
 
 !         Now estimate the velocity and density at every "i = const" line, call 
@@ -212,30 +199,40 @@
 !             6. Update the estimate of the velocity "v_guess(i)" 
 !         INSERT
 
-            allocate(v_guess(ni))
-            allocate(t_guess(ni))
-            allocate(p_guess(ni))
-            allocate(ro_guess(ni))
+            ! allocate(v_guess(g%ni))
+            ! allocate(t_guess(g%ni))
+            ! allocate(p_guess(g%ni))
+            ! allocate(ro_guess(g%ni))
 
-            
+            ! ro_guess(i) = ro_out
 
-            ro_guess = ro_out
-
-            do i = 1,ni
+            ! do i = 1,ni
                   
-                  v_guess(i) = massflow / (ro_out * l_i(i))
+            !       v_guess(i) = massflow / (ro_guess(i) * l_i(i))
 
-                  t_guess(i) = max(bcs%tstag - 0.5 * v_guess(i)**2 / av%cp, t_lim) ! energy eqn for isentropic flow
-                  p_guess(i) = bcs%pstag*(t_guess(i)/bcs%tstag)**(1/av%fgam)
-                  ro_guess(i) = p_guess(i) / (av%rgas * t_guess(i))
-
-                  v_guess(i) = massflow / (ro_guess(i) * l_i(i))
-            end do
+            !       t_guess(i) = max(bcs%tstag - 0.5 * v_guess(i)**2 / av%cp, t_lim) ! energy eqn for isentropic flow
+            !       p_guess(i) = bcs%pstag*(t_guess(i)/bcs%tstag)**(1/av%fgam)
+            !       ro_guess(i) = p_guess(i) / (av%rgas * t_guess(i))
+            !       v_guess(i) = massflow / (ro_guess(i) * l_i(i))
+            ! end do
+            ro_guess = ro_out
+            v_guess = massflow / (ro_guess * l_i)
+            t_guess = bcs%tstag - 0.5 * v_guess**2 / av%cp
+            t_guess = max(t_guess,t_lim)
+            p_guess = bcs%pstag * (t_guess / bcs%tstag)**(1/av%fgam)
+            ro_guess = p_guess / (av%rgas * t_guess)
+            v_guess = massflow / (ro_guess * l_i)
 
             
             ! write(6,*) "massflow", massflow
             ! write(6,*) "tguess", t_guess
+            ! write(6,*) "ro_guess", ro_guess
             ! write(6,*) "li", l_i
+            ! write(6,*) "v_guess", v_guess 
+            ! write(6,*) "massflow", massflow ! this is slightly off but idk why..
+            ! write(6,*) "vout", v_out
+            ! write(6,*) "ro_out", ro_out
+            ! write(6,*) "length out", l_i(ni)
 
 
 !         Direct the calculated velocity to be parallel to the "j = const"
@@ -262,7 +259,9 @@
             ! write(6,*) "l hypot",  l_new
             ! write(6,*) "lx",  lx_new
             ! write(6,*) "ly",  ly_new
-            ! write(6,*) "nj",  nj
+            !write(6,*) "ro_guess", ro_guess
+            
+
 
 !         Make sure the guess has been copied for the "i = ni" values too
 !         INSERT
@@ -271,6 +270,9 @@
             g%ro(ni,:) = g%ro(ni-1,:)
             g%roe(ni,:) = g%roe(ni-1,:)
 
+            !write(6,*) "ro", g%ro
+            ! write(6,*) "roe", g%roe
+            ! write(6,*) "rovx", g%rovx
 
 
 !         Print the first elements of the guess like for the crude guess
