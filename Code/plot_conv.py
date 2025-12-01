@@ -42,7 +42,7 @@ def main():
 
     # Show all the plots
     plt.tight_layout()
-    plt.savefig('plot_conv_' + sys.argv[-1] + '.png', dpi=300)
+    plt.savefig('plot_conv_cfl_' + sys.argv[-1] +'cfl' + '.png', dpi=300)
 
     
 main()

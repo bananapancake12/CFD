@@ -8,7 +8,8 @@
 !     Explicitly declare the required variables
       use types
       implicit none
-      type(t_appvars), intent(in) :: av
+      ! type(t_appvars), intent(in) :: av
+      type(t_appvars), intent(inout) :: av
       type(t_grid), intent(inout) :: g
       type(t_bconds), intent(inout) :: bcs
       integer :: ni, nj
@@ -31,6 +32,14 @@
 !     Cell areas and projected side lengths at the centre of each respectively
       allocate(g%area(ni-1,nj-1),g%lx_i(ni,nj-1),g%ly_i(ni,nj-1), &
           g%lx_j(ni-1,nj),g%ly_j(ni-1,nj))
+
+
+!     Spatially varying timestep improvement 
+
+      allocate(g%l_min_SVT(ni-1,nj-1))
+      allocate(av%dt(1:ni-1,1:nj-1))
+      allocate(av%dt_total(1:ni-1,1:nj-1))    
+
 
 !     Primary flow variables in the mesh
       allocate(g%ro(ni,nj),g%rovx(ni,nj),g%rovy(ni,nj),g%roe(ni,nj))

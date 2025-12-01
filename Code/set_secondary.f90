@@ -38,6 +38,9 @@
 
       t_stat=(g%roe/g%ro - (0.5 * v**2) ) / av%cv
       g%p =g%ro * av%rgas * t_stat
+
+      !write(6,*) "g%p calc secondary ", g%p(1:10, 1:10)
+
       g%hstag = (av%cp * t_stat) + (0.5 * v**2)
 
       !write(6,*) "t_stat", t_stat !these values are off... could this b the isssue..?

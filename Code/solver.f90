@@ -22,7 +22,8 @@
       type(t_geometry) :: geom
       type(t_grid) :: g
       real :: d_max = 1, d_avg = 1
-      integer :: nstep, nconv = 5, ncheck = 5
+      integer :: nstep, nconv = 5, ncheck = 5, nrkuts, nrkut, counter   
+      real :: t_start, t_end 
 
 !     Read in the data on the run settings
       call read_settings(av,bcs)
@@ -73,7 +74,8 @@
 
 !     Set the length of the timestep, initially this is a constant based on a 
 !     conservative guess of the mach number
-      call set_timestep(av,g,bcs)
+      call set_secondary(av,g)
+      !call set_timestep(av,g,bcs)
 
 !     Open file to store the convergence history. This is human readable during
 !     a long run by using "tail -f conv_example.csv" in a terminal window
@@ -85,22 +87,47 @@
       open(unit=11,file='stopit')
       write(11,*) 0; close(11);
 
+      call cpu_time(t_start)
+
+
 !     Start the time stepping do loop for "nsteps". This is now the heart of the
 !     program, you should aim to program anything inside this loop to operate as
 !     efficiently as you can.
+
+
+      nrkuts = 4
+      counter = 0 
+
       do nstep = 1, av%nsteps
+
+          counter = counter +1
+          if (counter == 5) then
+            call set_timestep(av, g, bcs)
+            counter = 0 
+          end if
+
 
 !         Update record of nstep to use in subroutines
           av%nstep = nstep
 
-!         Calculate secondary flow variables used in conservation equations
-          call set_secondary(av,g)
+          g%ro_start = g%ro
+          g%roe_start = g%roe
+          g%rovx_start = g%rovx
+          g%rovy_start = g%rovy
 
-!         Apply inlet and outlet values at the boundaries of the domain
-          call apply_bconds(av,g,bcs)
+          do nrkut = 1,nrkuts
+            av%dt = av%dt_total / (1 + nrkuts - nrkut)
 
-!         Perform the timestep to update the primary flow variables
-          call euler_iteration(av,g)
+      !     Calculate secondary flow variables used in conservation equations
+            call set_secondary(av,g)
+
+      !     Apply inlet and outlet values at the boundaries of the domain
+            call apply_bconds(av,g,bcs)
+
+      !     Perform the timestep to update the primary flow variables
+            call euler_iteration(av,g)
+
+          end do 
 
 !         Write out summary every "nconv" steps and update "davg" and "dmax" 
           if(mod(av%nstep,nconv) == 0) then
@@ -121,9 +148,13 @@
 
       end do
 
+      call cpu_time(t_end)
+      
+
 !     Calculation finished, call "write_output" to write the final, not 
 !     necessarily converged flowfield
       write(6,*) 'Calculation completed after', av%nstep,'iterations'
+      write(6,*) 'CPU time for timestep loop (s): ', t_end - t_start
       call write_output(av,g,3)
 !
 !     Close open convergence history file

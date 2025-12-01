@@ -8,7 +8,7 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      subroutine smooth_array(av,prop)
+      subroutine smooth_array(av,prop,sfac)
 
 !     This subroutine smooths "prop" to stabilise the calculation, the basic 
 !     solver uses second order smoothing, many improvements are possible.
@@ -20,6 +20,7 @@
       real, intent(inout) :: prop(:,:)
       real, dimension(size(prop,1),size(prop,2)) :: prop_avg
       integer :: ni, nj
+      real :: sfac
 
 !     Get the block size and store locally for convenience
       ni = size(prop,1); nj = size(prop,2)

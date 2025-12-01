@@ -58,10 +58,23 @@ def main():
         # Add colorbar with variable name
         colorbar(hc,colnames[n])
 
-        # Add Mach = 1 contours
+        # Add Mach = contours
         if name == 'mach':
-            ax.contour(g['x'],g['y'],g['mach'],[1.0],colors='w',
-                linewidths=0.5) 
+            CS = ax.contour(
+                g['x'], g['y'], g['mach'],
+                levels=[0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,1],
+                colors='w',
+                linewidths=0.5
+            )
+            ax.clabel(CS, inline=True, fontsize=10, fmt='%.1f')
+
+            # Force all text horizontal
+            for txt in CS.labelTexts:
+                txt.set_rotation(0)
+
+
+    
+
 
         # Draw the walls of the block
         plot_wall(ax,g)

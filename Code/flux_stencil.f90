@@ -8,7 +8,7 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      subroutine sum_fluxes(av,flux_i,flux_j,area,prop,dcell)
+      subroutine sum_fluxes(av,flux_i,flux_j,area,prop,prop_start,dcell)
 
 !     This subroutine sums the fluxes into each cell, calculates the change in 
 !     the cell property inside, distributes the change to the four nodes of the
@@ -16,13 +16,14 @@
 
 !     Explicitly declare the required variables
       use types
+      use smooth_stencil
       implicit none
       type(t_appvars), intent(in) :: av
       real, intent(in) :: flux_i(:,:), flux_j(:,:), area(:,:)
-      real, intent(inout) :: prop(:,:)
+      real, intent(inout) :: prop(:,:), prop_start(:,:)
       real, intent(out) :: dcell(:,:)
       real, dimension(size(prop,1),size(prop,2)) :: dnode
-      integer :: ni, nj
+      integer :: ni, nj, k 
 
 !     Get the block size and store locally for convenience
       ni = size(prop,1); nj = size(prop,2)
@@ -37,6 +38,11 @@
 
       dcell = (av%dt/area(1:ni-1,1:nj-1)) * (-flux_i(2:ni,:) + flux_i(1:ni-1,:) - flux_j(:,2:nj)+ flux_j(:,1:nj-1))
 
+      ! call smooth_array(av,dcell, av%sfac_residual)
+
+      do k = 1,5
+            call smooth_array(av,dcell, av%sfac_single)
+      end do 
       ! write(6,*) "dcell", dcell
 
 !     Now distribute the changes equally to the four corners of each cell. Each 
@@ -76,7 +82,7 @@
 !     INSERT
       ! prop(1:ni,1:nj) = prop(1:ni,1:nj)+  dnode(1:ni,1:nj) 
       ! these are the same as im doing the whole domain
-      prop = prop + dnode
+      prop = prop_start + dnode
 
 
       end subroutine sum_fluxes

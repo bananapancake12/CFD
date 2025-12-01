@@ -15,6 +15,7 @@ plt.rcParams["savefig.directory"] = '.'; plt.rcParams['savefig.dpi'] = 600;
 plt.rc('font',size=14); plt.rc('axes',titlesize=16); plt.rc('axes',labelsize=16)
 
 ################################################################################
+    
 
 def calc_secondary(av,b):
     # Calculate secondary flow variables that you will need to inspect during
@@ -28,6 +29,9 @@ def calc_secondary(av,b):
     density = b['ro']
     # hstag = b['hstag']
     energy = b['roe']
+    lx_i =  b['lx_i']
+    ly_i =  b['ly_i']
+
 
     gamma = av['gam']
     rgas = av['rgas']
@@ -40,6 +44,10 @@ def calc_secondary(av,b):
     vy = rovy / density
     v = np.sqrt( vx**2 + vy**2)
 
+    vx_in = vx[0, :]   # i = 0, all j
+    vy_in = vy[0, :]   # i = 0, all j
+    v_in  = np.hypot(vx_in, vy_in)
+
     #mach no
     # t_static = (hstag - (0.5 * v**2))/ cp
     t_static = (energy / density - 0.5 * v **2)/cv
@@ -48,6 +56,25 @@ def calc_secondary(av,b):
     t_stag = t_static * (1 + (gamma-1)/2 * mach_no**2)
     p_static =  density * rgas * t_static
     p_stag = p_static * (t_stag / t_static) ** (gamma/(gamma-1))
+    
+    
+    # rovx, rovy: shape (ni, nj)
+    # lx_i, ly_i: shape (ni, nj-1) – face vectors for the i-cuts
+
+    # rovx_face = 0.5 * (rovx[:, 1:] + rovx[:, :-1])   # (ni, nj-1)
+    # rovy_face = 0.5 * (rovy[:, 1:] + rovy[:, :-1])   # (ni, nj-1)
+
+    # mass_i = rovx_face * lx_i + rovy_face * ly_i     # (ni, nj-1)
+
+    # total mass flow through each i-plane
+    # massflow = np.sum(mass_i, axis=1)                # (ni,)
+
+    # choose inlet cut (usually the FIRST *interior* i index)
+    # massflow_in = massflow[0]
+
+    # m_ratio = massflow / massflow_in                 # (ni,)
+
+
 
     flow_angle = np.arctan2(vy,vx) #rads
 
@@ -71,11 +98,20 @@ def calc_secondary(av,b):
     b['flow_angle'] = flow_angle
     b['entropy'] = entropy
     b['enthalpy'] = enthalpy
+    # b['m_ratio'] =  massflow/massflow_in
 
 
 
 
     return b
+
+################################################################################
+
+def mass_flow(c):
+    # mass through each face
+    mass = face_av(c['rovx']) * c['lx'] + face_av(c['rovy']) * c['ly']
+    return np.sum(mass)  # total mass flow through this cut
+
 
 ################################################################################
 

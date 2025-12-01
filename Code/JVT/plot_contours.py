@@ -64,8 +64,8 @@ def main():
         plot_wall(ax,g)
 
     # Show all the plots
-    plt.show()
-
+        plt.savefig(f"plot_{name}" + sys.argv[-1] + ".png", dpi=200)
+        plt.close(fig)
     
 main()
 

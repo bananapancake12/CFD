@@ -106,21 +106,46 @@
 !     both the "min" and "minval" functions.
 !     INSERT
 
-      allocate(li(ni-1, nj-1))
-      allocate(lj(ni-1, nj-1))
+      ! allocate(li(ni-1, nj-1))
+      ! allocate(lj(ni-1, nj-1))
 
-      do j = 1, nj-1
-            do i = 1, ni-1
-                  li(i,j) = hypot(g%lx_i(i,j),g%ly_i(i,j))
-                  lj(i,j) = hypot(g%lx_j(i,j),g%ly_j(i,j))
-                  
+      allocate(li(1:ni, 1:nj-1))  
+      allocate(lj(1:ni-1, 1:nj)) 
+
+      ! do j = 1, nj-1
+      !       do i = 1, ni
+      !             li(i,j) = hypot(g%lx_i(i,j),g%ly_i(i,j))
+      !             lj(i,j) = hypot(g%lx_j(i,j),g%ly_j(i,j))
+      !       end do
+      ! end do
+
+      do i = 1, ni
+            do j = 1, nj-1
+                  li(i,j) = hypot(g%lx_i(i,j), g%ly_i(i,j))
             end do
       end do
+
+      do i = 1, ni-1
+            do j = 1, nj
+                  lj(i,j) = hypot(g%lx_j(i,j), g%ly_j(i,j))
+            end do
+      end do
+
+      ! new lmin for each box 
+      
+      do j = 1, nj-1
+            do i = 1, ni-1
+                  g%l_min_SVT(i,j) = minval([li(i,j), li(i+1,j), lj(i,j), lj(i,j+1)])
+            end do
+      end do
+
 
       min_i = minval(li)
       min_j = minval(lj)
 
       g%l_min = min(min_i, min_j)
+
+      
 !
 !     Print the overall minimum length size that has been calculated
       write(6,*) 'Calculated cell areas and facet lengths'
