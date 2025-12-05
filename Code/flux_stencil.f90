@@ -40,9 +40,9 @@
 
       ! call smooth_array(av,dcell, av%sfac_residual)
 
-      do k = 1,5
-            call smooth_array(av,dcell, av%sfac_single)
-      end do 
+      ! do k = 1,5
+      !       call smooth_array(av,dcell, av%sfac_single)
+      ! end do 
       ! write(6,*) "dcell", dcell
 
 !     Now distribute the changes equally to the four corners of each cell. Each 
