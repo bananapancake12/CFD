@@ -75,7 +75,7 @@
 !     Set the length of the timestep, initially this is a constant based on a 
 !     conservative guess of the mach number
       call set_secondary(av,g)
-      !call set_timestep(av,g,bcs)
+      call set_timestep(av,g,bcs)
 
 !     Open file to store the convergence history. This is human readable during
 !     a long run by using "tail -f conv_example.csv" in a terminal window
@@ -100,11 +100,13 @@
 
       do nstep = 1, av%nsteps
 
-          counter = counter +1
-          if (counter == 5) then
-            call set_timestep(av, g, bcs)
-            counter = 0 
-          end if
+
+      !   ! Spatially varying timestep improvement
+      !     counter = counter +1
+      !     if (counter == 5) then
+      !       call set_timestep(av, g, bcs)
+      !       counter = 0 
+      !     end if
 
 
 !         Update record of nstep to use in subroutines

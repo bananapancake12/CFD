@@ -34,11 +34,12 @@
           g%lx_j(ni-1,nj),g%ly_j(ni-1,nj))
 
 
-!     Spatially varying timestep improvement 
 
-      allocate(g%l_min_SVT(ni-1,nj-1))
-      allocate(av%dt(1:ni-1,1:nj-1))
-      allocate(av%dt_total(1:ni-1,1:nj-1))    
+
+! !     Spatially varying timestep improvement 
+!       allocate(g%l_min_SVT(ni-1,nj-1))
+!       allocate(av%dt(1:ni-1,1:nj-1))
+!       allocate(av%dt_total(1:ni-1,1:nj-1))    
 
 
 !     Primary flow variables in the mesh
