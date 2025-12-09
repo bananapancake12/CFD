@@ -17,9 +17,15 @@
           real ::  cfl, sfac, d_max, d_avg, sfac_residual, sfac_single
           integer :: nsteps, nstep
 
-          ! real, allocatable :: dt(:,:), dt_total(:,:) !turn on for the changing timestep 
+          
+          !!!!!!!!!  turn on for the changing timestep   !!!!!!!!!!!!!!
+          real, allocatable :: dt(:,:), dt_total(:,:)
+          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-          real :: dt, dt_total
+          !!!!!!!!!!!!!  turn on for normal  timestep   !!!!!!!!!!!!!!
+          ! real :: dt, dt_total
+          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          
 
 !         Reference values of the primary flow variables
           real :: ro_ref, roe_ref, rov_ref

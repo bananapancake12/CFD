@@ -9,6 +9,21 @@
 !     or "path_to_solver/solver.x < input_casename.txt > log_casename.txt &" to
 !     run in the background
 
+      ! TO CHANGE TO IMPLEMENT THE RESIDUAL AVERAGING
+      ! smooth array 
+
+
+      ! TO CHANGE TO IMPLEMENT THE SPACE VARYING TIMESTEP 
+      ! calc areas
+      ! set timestep 
+      ! allocate arrays 
+      ! types
+      ! solver 
+
+      ! TO CHANGE TO IMPLEMENT RK4 
+      ! flux stencil
+      ! solver 
+
 !     Use derived data types defined in a separate module
       use types
 
@@ -98,10 +113,53 @@
       nrkuts = 4
       counter = 0 
 
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  OLD VERSION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!        do nstep = 1, av%nsteps
+
+! !         Update record of nstep to use in subroutines
+!           av%nstep = nstep
+
+! !         Calculate secondary flow variables used in conservation equations
+!           call set_secondary(av,g)
+
+! !         Apply inlet and outlet values at the boundaries of the domain
+!           call apply_bconds(av,g,bcs)
+
+! !         Perform the timestep to update the primary flow variables
+!           call euler_iteration(av,g)
+
+! !         Write out summary every "nconv" steps and update "davg" and "dmax" 
+!           if(mod(av%nstep,nconv) == 0) then
+!               call check_conv(av,g,d_avg,d_max)
+!           end if
+
+! !         Check the solution hasn't diverged or a stop has been requested 
+! !         every "ncheck" steps
+!           if(mod(av%nstep,ncheck) == 0) then
+!               call check_stop(av,g)
+!           end if
+
+! !         Stop marching if converged to the desired tolerance "conlim"
+!           if(d_max < av%d_max .and. d_avg < av%d_avg) then
+!               write(6,*) 'Calculation converged in', nstep,'iterations'
+!               exit
+!           end if
+
+!       end do
+
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!! RUNGE KUTTA VERSION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
       do nstep = 1, av%nsteps
 
 
-      !   ! Spatially varying timestep improvement
+        !!!!!! Spatially varying timestep improvement!!!!!
+
       !     counter = counter +1
       !     if (counter == 5) then
       !       call set_timestep(av, g, bcs)
@@ -149,6 +207,8 @@
           end if
 
       end do
+
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       call cpu_time(t_end)
       

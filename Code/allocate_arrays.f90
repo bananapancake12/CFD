@@ -10,7 +10,7 @@
       implicit none
       ! type(t_appvars), intent(in) :: av
       type(t_appvars), intent(inout) :: av
-      type(t_grid), intent(inout) :: g
+      type(t_grid), intent(inout), allocatable :: g
       type(t_bconds), intent(inout) :: bcs
       integer :: ni, nj
 
@@ -36,10 +36,10 @@
 
 
 
-! !     Spatially varying timestep improvement 
-!       allocate(g%l_min_SVT(ni-1,nj-1))
-!       allocate(av%dt(1:ni-1,1:nj-1))
-!       allocate(av%dt_total(1:ni-1,1:nj-1))    
+!     !!!!!!!!!!!!!!! Spatially varying timestep improvement !!!!!!!!!!!!!!!!
+      allocate(g%l_min_SVT(ni-1,nj-1))
+      allocate(av%dt(1:ni-1,1:nj-1))
+      allocate(av%dt_total(1:ni-1,1:nj-1))    
 
 
 !     Primary flow variables in the mesh

@@ -38,7 +38,7 @@
 
       dcell = (av%dt/area(1:ni-1,1:nj-1)) * (-flux_i(2:ni,:) + flux_i(1:ni-1,:) - flux_j(:,2:nj)+ flux_j(:,1:nj-1))
 
-      ! call smooth_array(av,dcell, av%sfac_residual)
+      call smooth_array(av,dcell, av%sfac_residual)
 
       ! do k = 1,5
       !       call smooth_array(av,dcell, av%sfac_single)
@@ -82,7 +82,14 @@
 !     INSERT
       ! prop(1:ni,1:nj) = prop(1:ni,1:nj)+  dnode(1:ni,1:nj) 
       ! these are the same as im doing the whole domain
+
+
+      !!! RK4
       prop = prop_start + dnode
+
+      !!!! Normal
+      ! prop = prop + dnode
+
 
 
       end subroutine sum_fluxes

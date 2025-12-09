@@ -33,16 +33,16 @@
       !!!!!!!!!!!!!!!!!!!!    OLD TIMESTEP PER CELL     !!!!!!!!!!!!!!!!!!!!!!!
       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      real :: astag, v_max
+      ! real :: astag, v_max
 
 
-      astag = sqrt(av%gam * av%rgas * bcs%tstag)
+      ! astag = sqrt(av%gam * av%rgas * bcs%tstag)
 
-      v_max = astag
+      ! v_max = astag
 
-      av%dt = av%cfl * g%l_min / (v_max + astag)
+      ! av%dt = av%cfl * g%l_min / (v_max + astag)
 
-      av%dt_total = av%dt
+      ! av%dt_total = av%dt
 
 
 
@@ -52,34 +52,34 @@
       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-      !!!!!!!!!! calculating local speed of sound and local velocity!!!!!!!!!!!
+      !!!!!!!!! calculating local speed of sound and local velocity!!!!!!!!!!!
 
-      !real, allocatable :: astag(:,:), v(:,:), astag_avrg(:,:), v_avrg(:,:)
+      real, allocatable :: astag(:,:), v(:,:), astag_avrg(:,:), v_avrg(:,:)
 
-      ! ni = g%ni; nj = g%nj;
+      ni = g%ni; nj = g%nj;
 
-      ! allocate(astag(1:ni, 1:nj),v(1:ni, 1:nj), astag_avrg(1:ni-1,1:nj-1), v_avrg(1:ni-1,1:nj-1))
+      allocate(astag(1:ni, 1:nj),v(1:ni, 1:nj), astag_avrg(1:ni-1,1:nj-1), v_avrg(1:ni-1,1:nj-1))
 
-      ! astag=0
-      ! v=0
-      ! astag_avrg=0
-      ! v_avrg=0
+      astag=0
+      v=0
+      astag_avrg=0
+      v_avrg=0
 
 
-      ! astag(1:ni, 1:nj) = sqrt(av%gam * g%p(1:ni, 1:nj) / g%ro(1:ni, 1:nj))
+      astag(1:ni, 1:nj) = sqrt(av%gam * g%p(1:ni, 1:nj) / g%ro(1:ni, 1:nj))
 
-      ! v(1:ni, 1:nj) = sqrt(g%vx(1:ni, 1:nj)**2 + g%vy(1:ni, 1:nj)**2)
+      v(1:ni, 1:nj) = sqrt(g%vx(1:ni, 1:nj)**2 + g%vy(1:ni, 1:nj)**2)
 
-      !  astag_avrg(1:ni-1,1:nj-1) = 0.25 *((astag(1:ni-1,1:nj-1) + astag(2:ni,1:nj-1) + astag(1:ni-1,2:nj) &
-      ! + astag(2:ni,2:nj)))
+       astag_avrg(1:ni-1,1:nj-1) = 0.25 *((astag(1:ni-1,1:nj-1) + astag(2:ni,1:nj-1) + astag(1:ni-1,2:nj) &
+      + astag(2:ni,2:nj)))
 
-      ! v_avrg(1:ni-1,1:nj-1) = 0.25 *((v(1:ni-1,1:nj-1) + v(2:ni,1:nj-1) + v(1:ni-1,2:nj) &
-      ! + v(2:ni,2:nj)))
+      v_avrg(1:ni-1,1:nj-1) = 0.25 *((v(1:ni-1,1:nj-1) + v(2:ni,1:nj-1) + v(1:ni-1,2:nj) &
+      + v(2:ni,2:nj)))
 
-      ! ! New dt for each cell
+      ! New dt for each cell
 
-      ! av%dt_total(1:ni-1,1:nj-1) = av%cfl * g%l_min_SVT(1:ni-1,1:nj-1) / (v_avrg(1:ni-1,1:nj-1)+astag_avrg(1:ni-1,1:nj-1))
-      ! av%dt(1:ni-1,1:nj-1) = av%dt_total(1:ni-1,1:nj-1)
+      av%dt_total(1:ni-1,1:nj-1) = av%cfl * g%l_min_SVT(1:ni-1,1:nj-1) / (v_avrg(1:ni-1,1:nj-1)+astag_avrg(1:ni-1,1:nj-1))
+      av%dt(1:ni-1,1:nj-1) = av%dt_total(1:ni-1,1:nj-1)
 
 
       end subroutine set_timestep

@@ -132,19 +132,19 @@
       end do
 
 
-      ! ! Spatially varying timestep improvement : new lmin for each box 
+      ! Turn on for spatially varying timestep improvement : new lmin for each box 
       
-      ! do j = 1, nj-1
-      !       do i = 1, ni-1
-      !             g%l_min_SVT(i,j) = minval([li(i,j), li(i+1,j), lj(i,j), lj(i,j+1)])
-      !       end do
-      ! end do
+      do j = 1, nj-1
+            do i = 1, ni-1
+                  g%l_min_SVT(i,j) = minval([li(i,j), li(i+1,j), lj(i,j), lj(i,j+1)])
+            end do
+      end do
 
+      !!!!! Old minval
+      ! min_i = minval(li)
+      ! min_j = minval(lj)
 
-      min_i = minval(li)
-      min_j = minval(lj)
-
-      g%l_min = min(min_i, min_j)
+      ! g%l_min = min(min_i, min_j)
 
       
 !

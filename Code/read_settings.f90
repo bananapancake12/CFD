@@ -37,7 +37,7 @@
 !     proportional to cfl
       av%sfac = av%sfac * av%cfl
       av%d_max = av%d_max * av%cfl
-      av%sfac_residual=0.5
+      av%sfac_residual=0.8
       av%sfac_single=0.1
 
 !     Average convergence limit on residuals is set to half of the maximum

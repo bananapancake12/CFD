@@ -32,9 +32,7 @@ def main():
 
     # Show all the plots
     # plt.show()
-    plt.savefig("my_plot.png", dpi=300, bbox_inches='tight')
-    
-
+    plt.savefig("plot_coord.png", dpi=300, bbox_inches='tight')
     
 main()
 
